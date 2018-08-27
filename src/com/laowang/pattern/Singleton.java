@@ -9,7 +9,7 @@ import java.util.concurrent.CountDownLatch;
  * @author wangyonghao
  * @date 2018/8/24
  */
-public class Singleton {
+public class Singleton<T> {
 
     private String name;
 
@@ -19,10 +19,10 @@ public class Singleton {
         return name;
     }
 
-    private static Map<Class<? extends Singleton>, Singleton> map = new ConcurrentHashMap<>();
+    private static Map<Class,Object> map = new ConcurrentHashMap<>();
 
-    public static <T extends Singleton> Singleton getInstance(Class<T> clazz){
-        Singleton obj = map.get(clazz);
+    public static<T> T getInstance(Class clazz){
+        T obj = (T) map.get(clazz);
         if (obj != null){
             return obj;
         }else{
@@ -41,7 +41,7 @@ public class Singleton {
                 if ((map.get(clazz)) == null){
                     try {
                         //Thread.sleep(1000);
-                        obj = clazz.newInstance();
+                        obj = (T)clazz.newInstance();
                         map.put(clazz,obj);
                     } catch (InstantiationException e) {
                         e.printStackTrace();
@@ -52,7 +52,7 @@ public class Singleton {
                     }
                 }
             }
-            return map.get(clazz);
+            return (T)map.get(clazz);
         }
     }
 
@@ -67,6 +67,9 @@ public class Singleton {
 
     /** 测试*/
     public static void main(String[] args) throws InterruptedException {
+
+        Singleton.getInstance(GenericsSingleton.class);
+
         //测试多线程
         CountDownLatch countDownLatch = new CountDownLatch(5);
         for (int i = 0; i < 5; i++) {
